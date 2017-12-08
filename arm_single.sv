@@ -19,7 +19,7 @@
 //                  [25]:    1 for immediate, 0 for register
 //                  [24:21]: 0100 (ADD) / 0010 (SUB) /
 //                           0000 (AND) / 1100 (ORR) /
-//							 1010 (CMP) / 1000 (TST);
+//			     1010 (CMP) / 1000 (TST) /
 //                  [20]:    S (1 = update CPSR status Flags)
 //   Instr[19:16] = rn
 //   Instr[15:12] = rd
@@ -238,8 +238,7 @@ module decoder(input  logic [1:0] Op,
 		4'b1000: ALUControl = 2'b10; // TST
   	    default: ALUControl = 2'bx;  // unimplemented
       endcase
-	if (Funct[4:1] == 4'b1010) NoWrite = 1; 
-	else if (Funct[4:1] == 4'b1000) NoWrite = 1;
+      if (Funct[4:1] == 4'b1010) | (Funct[4:1] == 4'b1000) NoWrite = 1; 
 	else NoWrite = 0;
     // update flags if S bit is set 
 	// (C & V only updated for arith instructions)
@@ -275,7 +274,7 @@ module condlogic(input  logic       clk, reset,
   // write controls are conditional
   condcheck cc(Cond, Flags, CondEx);
   assign FlagWrite = FlagW & {2{CondEx}};
-  assign RegWrite  = (RegW  & CondEx)& ~NoWrite;
+  assign RegWrite  = (RegW  & CondEx & ~NoWrite);
   assign MemWrite  = MemW  & CondEx;
   assign PCSrc     = PCS   & CondEx;
 endmodule    
