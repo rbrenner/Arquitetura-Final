@@ -1,0 +1,15 @@
+		MOV		R0, #2000
+		MOV		R1, #8
+		MOV		R3, #0
+		MOV		R4, #0X7FFFFFFF
+		
+ROTINA
+		LSL		R2, R1, R3
+		STR		R2, [R0], #4
+		TST		R2,R4
+		BEQ		FIM
+		ADD		R3, R3, #1
+		CMP		R3, #10
+		BEQ		FIM
+		B		ROTINA
+FIM
