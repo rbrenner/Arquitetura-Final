@@ -1,15 +1,25 @@
-		MOV		R0, #2000
-		MOV		R1, #8
-		MOV		R3, #0
-		MOV		R4, #0X7FFFFFFF
-		
-ROTINA
-		STR		R1, [R0], #0x04
-		TST		R1,  R4
-		BEQ		FIM
-		ADD		R3, R3, #1
-		CMP		R3, #10
-		BEQ		FIM
-		LSL		R1,  R1, #0x01
-		B		ROTINA
-FIM
+		AND		R2, R2,#0x00			;Faz 8 bits menos significativos virarem zeros
+		LSL		R2, R2,#0x18			;Desloca valores para R2 ser 0x00000000
+		ADD		R3, R2,#0x00			;Atribui endere�o inicial ao contador
+		ADD		R1, R2,#0x08			;Atribui valor base ao progama
+		ADD		R0, R2,#0xFA			;Atribui valor que ir� virar 2000
+		LSL		R0, R0,#0x03			;Desloca zeros. Agora R0 = 2000
+		ADD		R5, R2,#0x7F			;Atribui valor ao Registrador Tempor�rio R5
+		LSL		R4, R5,#0x18			;R4 = 0x7F000000
+		ORR		R5, R0,#0xFF			;R5 = 0x000000FF
+		ORR		R4, R4, R5			;R4 = 0x7F0000FF
+		LSL		R5, R5,#0x08			;R5 = 0x0000FF00
+		ORR		R4, R4, R5			;R4 = 0x7F00FFFF
+		LSL		R5, R5,#0x08			;R5 = 0x00FF0000
+		ORR		R4, R4, R5			;R4 = 0x7FFFFFFF
+ROTINA								;Inicio da rotina de calculo
+		STR		R1, [R0], #0x04			;Salva R2 na mem�ria e depois soma 4 ao endere�o
+		TST		R1,  R4				;Testa se chegou ao valor m�ximo
+		BEQ		FIM				;Se chegou, termina o programa
+		ADD		R3,  R3, #0x01			;Sen�o, adiciona 1 ao contador
+		CMP		R3,  #10			;Ve se ja rodou 10 vezes
+		BEQ		FIM				;Se j� rodou 10 vezes, termina programa
+		LSL		R1,  R1, #0x01			;R2 = R1*2^(R3)
+		B		ROTINA				;Senao, retorna ao inicio da rotina
+FIM								;Fim do programa
+		ORR		R2,  R1, R2
