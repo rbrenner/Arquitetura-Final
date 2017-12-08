@@ -4,12 +4,12 @@
 		MOV		R4, #0X7FFFFFFF
 		
 ROTINA
-		LSL		R2, R1, R3
-		STR		R2, [R0], #4
-		TST		R2,R4
+		STR		R1, [R0], #0x04
+		TST		R1,  R4
 		BEQ		FIM
 		ADD		R3, R3, #1
 		CMP		R3, #10
 		BEQ		FIM
+		LSL		R1,  R1, #0x01
 		B		ROTINA
 FIM
